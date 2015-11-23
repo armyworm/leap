@@ -1,27 +1,22 @@
 <!DOCTYPE html>
 <html>
  <head> 
-  <title>Example 06.02 - Advanced 3D geometries - Lathe</title> 
+  <title>test</title> 
   <script src="http://www.smartjava.org/ltjs/libs/three.js"></script> 
   <script src="http://www.smartjava.org/ltjs/libs/jquery-1.9.0.js"></script> 
   <script src="http://www.smartjava.org/ltjs/libs/stats.js"></script> 
   <script src="http://www.smartjava.org/ltjs/libs/dat.gui.js"></script> 
+  <script src="http://rawgit.com/mrdoob/three.js/dev/build/three.min.js" ></script>
+<script src="http://rawgit.com/mrdoob/three.js/dev/examples/js/controls/OrbitControls.js" ></script>
+<script src="http://js.leapmotion.com/leap-0.6.4.js" ></script>
+<script>
   <style>
         body {
             /* set margin to 0 and overflow to hidden, to go fullscreen */
             margin: 0;
             overflow: hidden;
         }
-    </style> 
-  <script type="text/javascript">
-  var _gaq = _gaq || [];
-  _gaq.push(['_setAccount', 'UA-19067049-1']);
-  _gaq.push(['_trackPageview']);
-  (function() {
-    var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
-    ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
-    var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
-  })();
+  </style> 
 </script>
  </head> 
  <body> 
@@ -33,17 +28,55 @@
   <!-- Javascript code that runs our Three.js examples --> 
   <script type="text/javascript">
     // once everything is loaded, we run our Three.js stuff.
-    $(function () {
+    var baseBoneRotation = ( new THREE.Quaternion ).setFromEuler( new THREE.Euler( 0, 0, Math.PI / 2 ) );
+    var armMeshes = [];
+    var boneMeshes = [];
+
+    var stats, renderer, scene, camera, controls;
+
+    init();
+    Leap.loop( { background: true }, leapAnimate ).connect();
+    function init() {
+
+        var css = document.head.appendChild( document.createElement( 'style' ) );
+        css.innerHTML =
+        `
+
+            body { font: 12pt monospace; margin: 0; overflow: hidden; }
+            h2 { margin: 0 }
+            #aa {text-decoration: none; }
+            #menu { margin: 0 20px; position: absolute; }
+
+        `;
+
+        var menu = document.body.appendChild( document.createElement( 'div' ) );
+        menu.id = 'menu';
+        menu.innerHTML =
+        `
+
+            <h2>
+                <a href="" > ${ document.title } </a>
+                <a id=aa href=http://jaanga.github.io/gestification-r2/template-leap-threejs/ >&#x24D8;</a>
+            </h2>
+            <div id=info ></div>
+
+        `;
+
         var stats = initStats();
         // create a scene, that will hold all our elements such as objects, cameras and lights.
         var scene = new THREE.Scene();
         // create a camera, which defines where we're looking at.
         var camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.1, 1000);
         // create a render and set the size
-        var webGLRenderer = new THREE.WebGLRenderer();
-        webGLRenderer.setClearColor(new THREE.Color(0xEEEEEE, 1.0));
-        webGLRenderer.setSize(window.innerWidth, window.innerHeight);
-        webGLRenderer.shadowMapEnabled = true;
+
+        webGLRenderer = new THREE.WebGLRenderer( { alpha: 1, antialias: true, clearColor: 0xffffff }  );
+        webGLRenderer.setSize( window.innerWidth, window.innerHeight );
+        document.body.appendChild( webGLRenderer.domElement );
+
+        //var webGLRenderer = new THREE.WebGLRenderer();
+        //webGLRenderer.setClearColor(new THREE.Color(0xEEEEEE, 1.0));
+        //webGLRenderer.setSize(window.innerWidth, window.innerHeight);
+        //webGLRenderer.shadowMapEnabled = true;
         //.shadowMapEnabled
         //Default is false. If set, use shadow maps in the scene.
         // position and point the camera to the center of the scene
@@ -51,6 +84,10 @@
         camera.position.y = 60;
         camera.position.z = 50;
         camera.lookAt(new THREE.Vector3(10, 0, 0));
+
+
+        mcontrols = new THREE.OrbitControls( camera, webGLRenderer.domElement );
+        mcontrols.maxDistance = 1000;
         // add the output of the renderer to the html element
         $("#WebGL-output").append(webGLRenderer.domElement);
         // call the render function
@@ -73,7 +110,7 @@
             };
         }
         var gui = new dat.GUI();
-        gui.add(controls, 'segments', 0, 300).step(1).onChange(controls.redraw);
+        gui.add(controls, 'segments', 0, 500).step(1).onChange(controls.redraw);
         gui.add(controls, 'phiStart', 0, 2 * Math.PI).onChange(controls.redraw);
         gui.add(controls, 'phiLength', 0, 2 * Math.PI).onChange(controls.redraw);
         render();
@@ -129,7 +166,7 @@
             $("#Stats-output").append(stats.domElement);
             return stats;
         }
-    });
+    }
 </script>  
  </body>
 </html>

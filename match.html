@@ -5,18 +5,15 @@
   <script src="http://www.smartjava.org/ltjs/libs/three.js"></script> 
   <script src="http://www.smartjava.org/ltjs/libs/jquery-1.9.0.js"></script> 
   <script src="http://www.smartjava.org/ltjs/libs/stats.js"></script> 
-  <script src="http://www.smartjava.org/ltjs/libs/dat.gui.js"></script>
-  <script src="http://threejs.org/build/three.min.js"></script>
-  <script src="http://threejs.org/examples/js/controls/TrackballControls.js"></script>
-  <script src="http://threejs.org/examples/js/Detector.js"></script>
-  <script src="http://threejs.org/examples/js/libs/stats.min.js"></script> 
+  <script src="http://www.smartjava.org/ltjs/libs/dat.gui.js"></script> 
   <style>
         body {
             /* set margin to 0 and overflow to hidden, to go fullscreen */
             margin: 0;
             overflow: hidden;
         }
-    </style> 
+  </style> 
+</script>
  </head> 
  <body> 
   <div id="Stats-output"> 
@@ -24,14 +21,11 @@
   <!-- Div which will hold the Output --> 
   <div id="WebGL-output"> 
   </div> 
-  <div id="container">
-  </div>
   <!-- Javascript code that runs our Three.js examples --> 
   <script type="text/javascript">
     // once everything is loaded, we run our Three.js stuff.
-        var container, stats, controls;
-
-        var statss = initStats();
+    $(function () {
+        var stats = initStats();
         // create a scene, that will hold all our elements such as objects, cameras and lights.
         var scene = new THREE.Scene();
         // create a camera, which defines where we're looking at.
@@ -44,16 +38,6 @@
         //.shadowMapEnabled
         //Default is false. If set, use shadow maps in the scene.
         // position and point the camera to the center of the scene
-        controls = new THREE.TrackballControls( camera );
-        controls.rotateSpeed = 1.0;
-        controls.zoomSpeed = 1.2;
-        controls.panSpeed = 0.8;
-        controls.noZoom = false;
-        controls.noPan = false;
-        controls.staticMoving = true;
-        controls.dynamicDampingFactor = 0.3;
-        controls.keys = [ 65, 83, 68 ];
-        controls.addEventListener( 'change', render );
         camera.position.x = 70;
         camera.position.y = 60;
         camera.position.z = 50;
@@ -68,7 +52,7 @@
         var latheMesh;
         generatePoints(12, 2, 2 * Math.PI);
         // setup the control gui
-        var controlss = new function () {
+        var controls = new function () {
             // we need the first child, since it's a multimaterial
             this.segments = 12;
             this.phiStart = 0;
@@ -76,13 +60,13 @@
             this.redraw = function () {
                 scene.remove(spGroup);
                 scene.remove(latheMesh);
-                generatePoints(controlss.segments, controlss.phiStart, controlss.phiLength);
+                generatePoints(controls.segments, controls.phiStart, controls.phiLength);
             };
         }
         var gui = new dat.GUI();
-        gui.add(controlss, 'segments', 0, 100).step(1).onChange(controlss.redraw);
-        gui.add(controlss, 'phiStart', 0, 2 * Math.PI).onChange(controlss.redraw);
-        gui.add(controlss, 'phiLength', 0, 2 * Math.PI).onChange(controlss.redraw);
+        gui.add(controls, 'segments', 0, 100).step(1).onChange(controls.redraw);
+        gui.add(controls, 'phiStart', 0, 2 * Math.PI).onChange(controls.redraw);
+        gui.add(controls, 'phiLength', 0, 2 * Math.PI).onChange(controls.redraw);
         render();
         function generatePoints(segments, phiStart, phiLength) {
             // add 10 random spheres
@@ -118,9 +102,8 @@
             var mesh = THREE.SceneUtils.createMultiMaterialObject(geom, [meshMaterial, wireFrameMat]);
             return mesh;
         }
-    
         function render() {
-            statss.update();
+            stats.update();
             spGroup.rotation.x = step;
             latheMesh.rotation.x = step += 0.005;
             // render using requestAnimationFrame
@@ -128,16 +111,16 @@
             webGLRenderer.render(scene, camera);
         }
         function initStats() {
-            var statss = new Stats();
-            statss.setMode(0); // 0: fps, 1: ms
+            var stats = new Stats();
+            stats.setMode(0); // 0: fps, 1: ms
             // Align top-left
-            statss.domElement.style.position = 'absolute';
-            statss.domElement.style.left = '0px';
-            statss.domElement.style.top = '0px';
-            $("#Stats-output").append(statss.domElement);
-            return statss;
+            stats.domElement.style.position = 'absolute';
+            stats.domElement.style.left = '0px';
+            stats.domElement.style.top = '0px';
+            $("#Stats-output").append(stats.domElement);
+            return stats;
         }
-  
+    });
 </script>  
  </body>
 </html>
